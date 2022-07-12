@@ -1,10 +1,6 @@
 const inquirer = require("inquirer");
 
-const {
-	managerQs,
-	engineerQs,
-    internQs,
-} = require("./src/questions.js");
+const { managerQs, engineerQs, internQs } = require("./src/questions.js");
 const { writeFile, copyFile } = require("./src/generate-site.js");
 
 const Manager = require("./lib/Manager");
@@ -14,95 +10,177 @@ const Intern = require("./lib/Intern");
 const employees = [];
 
 // wrapping the inquirer.prompt() calls in functions to allow recursion
-// breaking them out into two because only one set of prompts should be recursive
-// there should only be one manager
+// breaking them out into three because each role has a different set of prompts
 
-// this runs once, first
+// at the end of each of these, it checks what type of employee was selected for the next one, and runs engineerPrompts(), runs internPrompts, or stops
+// i could stand to remove that repetition, but oh well
+
 function managerPrompts() {
 	console.log("Enter the manager's information.\n----------");
 
 	return inquirer
-		.prompt(managerQs)
-		// .then((answers) =>
-		// 	employees.push(
-		// 		new Manager(
-		// 			answers.name,
-		// 			answers.id,
-		// 			answers.email,
-		// 			answers.officeNumber
-		// 		)
-		// 	)
-		// );
-};
+		.prompt([
+			{
+				type: "input",
+				name: "name",
+				message: "Enter name:",
+			},
+			{
+				type: "input",
+				name: "id",
+				message: "Enter ID:",
+			},
+			{
+				type: "input",
+				name: "email",
+				message: "Enter email:",
+			},
+			{
+				type: "input",
+				name: "officeNumber",
+				message: "Enter office number:",
+			},
+			{
+				type: "list",
+				name: "typeOfNext",
+				message: "Select employee role:",
+				choices: [
+					"Engineer",
+					"Intern",
+					"I don't want to add another employee",
+				],
+			},
+		])
+		.then((answers) => {
+			employees.push(
+				new Manager(
+					answers.name,
+					answers.id,
+					answers.email,
+					answers.officeNumber
+				)
+			);
+
+			if (answers.typeOfNext === "Engineer") {
+				engineerPrompts();
+			} else if (answers.typeOfNext === "Intern") {
+				internPrompts();
+			} else {
+				return;
+			}
+		});
+}
 
 function engineerPrompts() {
-    return inquirer.prompt(engineerQs);
-};
+	console.log("Enter the engineer's information.\n----------");
+
+	return inquirer
+		.prompt([
+			{
+				type: "input",
+				name: "name",
+				message: "Enter name:",
+			},
+			{
+				type: "input",
+				name: "id",
+				message: "Enter ID:",
+			},
+			{
+				type: "input",
+				name: "email",
+				message: "Enter email:",
+			},
+			{
+				type: "input",
+				name: "github",
+				message: "Enter GitHub username:",
+			},
+			{
+				type: "list",
+				name: "typeOfNext",
+				message: "Select employee role:",
+				choices: [
+					"Engineer",
+					"Intern",
+					"I don't want to add another employee",
+				],
+			},
+		])
+		.then((answers) => {
+			employees.push(
+				new Engineer(
+					answers.name,
+					answers.id,
+					answers.email,
+					answers.github
+				)
+			);
+
+			if (answers.typeOfNext === "Engineer") {
+				engineerPrompts();
+			} else if (answers.typeOfNext === "Intern") {
+				internPrompts();
+			} else {
+				return;
+			}
+		});
+}
 
 function internPrompts() {
-    return inquirer.prompt(internQs);
+	console.log("Enter the intern's information.\n----------");
+
+	return inquirer
+		.prompt([
+			{
+				type: "input",
+				name: "name",
+				message: "Enter name:",
+			},
+			{
+				type: "input",
+				name: "id",
+				message: "Enter ID:",
+			},
+			{
+				type: "input",
+				name: "email",
+				message: "Enter email:",
+			},
+			{
+				type: "input",
+				name: "school",
+				message: "Enter name of school:",
+			},
+			{
+				type: "list",
+				name: "typeOfNext",
+				message: "Select employee role:",
+				choices: [
+					"Engineer",
+					"Intern",
+					"I don't want to add another employee",
+				],
+			},
+		])
+		.then((answers) => {
+			employees.push(
+				new Intern(
+					answers.name,
+					answers.id,
+					answers.email,
+					answers.school
+				)
+			);
+
+			if (answers.typeOfNext === "Engineer") {
+				engineerPrompts();
+			} else if (answers.typeOfNext === "Intern") {
+				internPrompts();
+			} else {
+				return;
+			}
+		});
 }
 
-// this has a .then() with a conditional in it, so it can recurse
-function otherPrompts(selectedType) {
-	return inquirer.prompt(otherEmployeeQuestions);
-    // .then((answers) => {
-	// 	const { typeOf } = answers;
-
-	// 	if (typeOf === "I don't want to add another employee") {
-	// 		console.log(employees);
-    //         return '';
-	// 	} else {
-	// 		if (typeOf === "Engineer") {
-	// 			employees.push(
-	// 				new Engineer(
-	// 					answers.name,
-	// 					answers.id,
-	// 					answers.email,
-	// 					answers.github
-	// 				)
-	// 			);
-	// 		} else if (typeOf === "Intern") {
-	// 			employees.push(
-	// 				new Intern(
-	// 					answers.name,
-	// 					answers.id,
-	// 					answers.email,
-	// 					answers.school
-	// 				)
-	// 			);
-	// 		}
-
-	// 		otherPrompts();
-	// 	}
-	// });
-}
-
-// managerPrompts()
-// .then(answers => {
-//     console.log(answers);
-//     if (answers.typeOfNext === "Engineer") {
-//         const newEngineer = otherPrompts();
-//         console.log(newEngineer);
-//         employees.push(
-//             new Engineer(
-//                 newEngineer.name,
-//                 newEngineer.id,
-//                 newEngineer.email,
-//                 newEngineer.github
-//             )
-//         );
-//     }
-// }
-// );
-
-managerPrompts()
-.then(answers => {
-    employees.push(new Manager(answers.name, answers.id, answers.email, answers.officeNumber));
-
-    if (answers.typeOfNext === "Engineer") {
-        engineerPrompts("Engineer");
-    } else if (answers.typeOfNext === "Intern") {
-        internPrompts("Intern");
-    }
-});
+managerPrompts();
