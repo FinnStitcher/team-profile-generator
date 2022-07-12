@@ -11,35 +11,36 @@ const Intern = require('./lib/Intern');
 const employees = [];
 
 // wrapping the inquirer.prompt() calls in functions to allow recursion
-function managerPrompts(questionArray) {
+// breaking them out into two because only one set of prompts should be recursive
+// there should only be one manager
+
+// this runs once, first
+function managerPrompts () {
     console.log("Enter the manager's information.\n----------");
 
-    return inquirer.prompt(questionArray);
-}
+    return inquirer.prompt(managerQuestions)
+    .then(answers => employees.push(new Manager(answers.name, answers.id, answers.email, answers.officeNumber)));
+};
 
-// needs to be wrapped in this function to allow recursion
-function prompts(questionArray) {
-	return inquirer.prompt(questionArray)
-    .then((answers) => {
+// this has a .then() with a conditional in it, so it can recurse
+function otherPrompts () {
+    return inquirer.prompt(otherEmployeeQuestions)
+    .then(answers => {
 		const { typeOf, addAnother } = answers;
         
-        if (!typeOf) {
-            employees.push(new Manager(answers.name, answers.id, answers.email, answers.officeNumber))
-        } else if (typeOf === "Engineer") {
+        if (typeOf === "Engineer") {
             employees.push(new Engineer(answers.name, answers.id, answers.email, answers.github))
         } else if (typeOf === "Intern") {
             employees.push(new Intern(answers.name, answers.id, answers.email, answers.school))
-        } else {
-            employees.push(new Employee(answers.name, answers.id, answers.email))
         };
 
 		if (addAnother) {
-			prompts(otherEmployeeQuestions);
+            otherPrompts();
 		} else {
             console.log(employees);
-		}
-	});
-}
+		}        
+    })
+};
 
-prompts(managerQuestions)
-;
+managerPrompts()
+.then(otherPrompts);

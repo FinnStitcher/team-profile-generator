@@ -22,13 +22,7 @@ const manager = [
 		type: "input",
 		name: "officeNumber",
 		message: "Enter office number:",
-	},
-	{
-		type: "confirm",
-		name: "addAnother",
-		message: "Add another employee?",
-		default: "true",
-	},
+	}
 ];
 
 const other = [
