@@ -22,38 +22,47 @@ const manager = [
 		type: "input",
 		name: "officeNumber",
 		message: "Enter office number:",
-	}
-];
-
-const other = [
+	},
 	{
 		type: "list",
-		name: "typeOf",
+		name: "typeOfNext",
 		message: "Select employee role:",
 		choices: ["Engineer", "Intern"],
 	},
+];
+
+const engineer = [
 	...generic,
 	{
 		type: "input",
 		name: "github",
 		message: "Enter GitHub username:",
-		when: ({ typeOf }) => typeOf === "Engineer",
 	},
+	{
+		type: "list",
+		name: "typeOfNext",
+		message: "Select employee role:",
+		choices: ["Engineer", "Intern", "I don't want to add another employee"],
+	},
+];
+
+const intern = [
+	...generic,
 	{
 		type: "input",
 		name: "school",
 		message: "Enter school:",
-		when: ({ typeOf }) => typeOf === "Intern",
 	},
 	{
-		type: "confirm",
-		name: "addAnother",
-		message: "Add another employee?",
-		default: "true",
+		type: "list",
+		name: "typeOfNext",
+		message: "Select employee role:",
+		choices: ["Engineer", "Intern", "I don't want to add another employee"],
 	},
 ];
 
 module.exports = {
-    managerQuestions: manager,
-    otherEmployeeQuestions: other
-}
+	managerQs: manager,
+	engineerQs: engineer,
+	internQs: intern,
+};
