@@ -1,36 +1,45 @@
 const inquirer = require("inquirer");
 
 const { managerQuestions, otherEmployeeQuestions } = require('./src/questions.js');
+const { writeFile, copyFile } = require('./src/generate-site.js');
 
-const employees = {
-	manager: {},
-	engineers: [],
-	interns: [],
-};
+const Employee = require('./lib/Employee');
+const Manager = require('./lib/Manager');
+const Engineer = require('./lib/Engineer');
+const Intern = require('./lib/Intern');
 
+const employees = [];
+
+// wrapping the inquirer.prompt() calls in functions to allow recursion
+function managerPrompts(questionArray) {
+    console.log("Enter the manager's information.\n----------");
+
+    return inquirer.prompt(questionArray);
+}
+
+// needs to be wrapped in this function to allow recursion
 function prompts(questionArray) {
-	inquirer.prompt(questionArray)
+	return inquirer.prompt(questionArray)
     .then((answers) => {
 		const { typeOf, addAnother } = answers;
-
-		// the first round of prompts includes no question with the id 'typeOf'
-		// so this will determine if it was the first round or not
-		if (!typeOf) {
-			employees.manager = { ...answers };
-		} else {
-			// push to the appropriate array
-			const formattedType = typeOf.toLowerCase() + "s";
-			employees[formattedType].push(answers);
-		}
+        
+        if (!typeOf) {
+            employees.push(new Manager(answers.name, answers.id, answers.email, answers.officeNumber))
+        } else if (typeOf === "Engineer") {
+            employees.push(new Engineer(answers.name, answers.id, answers.email, answers.github))
+        } else if (typeOf === "Intern") {
+            employees.push(new Intern(answers.name, answers.id, answers.email, answers.school))
+        } else {
+            employees.push(new Employee(answers.name, answers.id, answers.email))
+        };
 
 		if (addAnother) {
 			prompts(otherEmployeeQuestions);
 		} else {
-			console.log(employees);
+            console.log(employees);
 		}
 	});
 }
 
-console.log("First, enter the manager's information.\n----------");
-
-prompts(managerQuestions);
+prompts(managerQuestions)
+;
