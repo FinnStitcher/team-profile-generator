@@ -12,7 +12,7 @@ function thirdListItem(employee) {
 
 function generateCards(employees) {
 	const cardsHTML = employees.map((element) => {
-		let card = `<div class="card col-3 m-3">
+		let card = `<div class="card col-12 col-sm-5 col-md-3 m-3">
         <div class="card-header bg-gray text-light">
             <h2 class="card-title">${element.name}</h2>
             <h3 class="card-subtitle">${element.role}</h3>
@@ -21,7 +21,7 @@ function generateCards(employees) {
         <div class="card-body">
             <ul class="list-group">
                 <li>ID: ${element.id}</li>
-                <li>Email: ${element.email}</li>
+                <li>Email: <a href="mailto:${element.email}">${element.email}</a></li>
                 <li>${thirdListItem(element)}</li>
             </ul>
         </div>
@@ -52,7 +52,7 @@ function createHTML(employees) {
             <h1>Meet the Team</h1>
         </header>
     
-        <main class="d-flex">
+        <main class="d-flex flex-wrap">
             ${generateCards(employees)}
         </main>
     </body>
