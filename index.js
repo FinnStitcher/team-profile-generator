@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 
 const { writeFile, copyFile } = require("./src/generate-site.js");
+const createHTML = require('./src/site-template.js');
 
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
@@ -179,8 +180,11 @@ function internPrompts() {
 managerPrompts()
 	.then(() => {
 		console.log("Data received. Beginning file creation...");
-		return writeFile("testing");
+        return createHTML(employees);
 	})
+    .then(html => {
+		return writeFile(html);
+    })
 	.then((writeFileResponse) => {
 		console.log(writeFileResponse.message);
 		return copyFile();
