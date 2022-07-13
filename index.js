@@ -1,7 +1,7 @@
 const inquirer = require("inquirer");
 
 const { writeFile, copyFile } = require("./src/generate-site.js");
-const createHTML = require('./src/site-template.js');
+const createHTML = require("./src/site-template.js");
 
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
@@ -12,9 +12,8 @@ const employees = [];
 // wrapping the inquirer.prompt() calls in functions to allow recursion
 // breaking them out into three because each role has a different set of prompts
 
-// at the end of each of these, it checks what type of employee was selected for the next one, and runs engineerPrompts, runs internPrompts, or stops
-// i could stand to remove that repetition, but oh well
-
+// the following 3 functions all have a question asking what type of employee should be added next
+// they also each return the value selected for that question
 function managerPrompts() {
 	console.log("Enter the manager's information.\n----------");
 
@@ -43,7 +42,7 @@ function managerPrompts() {
 			{
 				type: "list",
 				name: "typeOfNext",
-				message: "Select employee role:",
+				message: "What type of employee do you want to add next?",
 				choices: [
 					"Engineer",
 					"Intern",
@@ -51,17 +50,7 @@ function managerPrompts() {
 				],
 			},
 		])
-		.then(answers => {
-            const { typeOfNext } = answers;
-
-            if (typeOfNext === "Engineer") {
-                return engineerPrompts()
-            } else if (typeOfNext === "Intern") {
-                return internPrompts();
-            } else {
-                return;
-            }
-        });
+		.then((answers) => answers.typeOfNext);
 }
 
 function engineerPrompts() {
@@ -92,24 +81,15 @@ function engineerPrompts() {
 			{
 				type: "list",
 				name: "typeOfNext",
-				message: "Select employee role:",
+				message: "What type of employee do you want to add next?",
 				choices: [
 					"Engineer",
 					"Intern",
 					"I don't want to add another employee",
 				],
 			},
-		]).then(answers => {
-            const { typeOfNext } = answers;
-
-            if (typeOfNext === "Engineer") {
-                return engineerPrompts()
-            } else if (typeOfNext === "Intern") {
-                return internPrompts();
-            } else {
-                return;
-            }
-        });
+		])
+		.then((answers) => answers.typeOfNext);
 }
 
 function internPrompts() {
@@ -140,7 +120,7 @@ function internPrompts() {
 			{
 				type: "list",
 				name: "typeOfNext",
-				message: "Select employee role:",
+				message: "What type of employee do you want to add next?",
 				choices: [
 					"Engineer",
 					"Intern",
@@ -148,41 +128,34 @@ function internPrompts() {
 				],
 			},
 		])
-		.then(answers => {
-            const { typeOfNext } = answers;
+		.then((answers) => answers.typeOfNext);
+}
 
-            if (typeOfNext === "Engineer") {
-                return engineerPrompts()
-            } else if (typeOfNext === "Intern") {
-                return internPrompts();
-            } else {
-                return;
-            }
-        });
-};
-
-// select and loop engineerPrompts() and internPromps()
-// function otherPrompts(typeOf) {
-//     if (typeOf === "Engineer") {
-//         engineerPrompts().then(answers => otherPrompts(answers.typeOfNext));
-//     } else if (typeOf === "Intern") {
-//         internPrompts.then(answers => otherPrompts(answers.typeOfNext));
-//     } else {
-//         return;
-//     }
-// }
+// select between and loop engineerPrompts() and internPromps()
+// not really sure why this needs to be formatted the way it does, with the return statements, but if it works it works
+function otherPrompts(typeOfNext) {
+	// remember: engineerPrompts() returns the type selected for the next employee
+	// that return value is fed back into otherPrompts()
+	if (typeOfNext === "Engineer") {
+		return engineerPrompts()
+        .then((typeOfNext) => otherPrompts(typeOfNext));
+	} else if (typeOfNext === "Intern") {
+		return internPrompts()
+        .then((typeOfNext) => otherPrompts(typeOfNext));
+	} else {
+		return;
+	}
+}
 
 managerPrompts()
-.then(answers => {
-    otherPrompts(answers.typeOfNext);
-})
+	.then(otherPrompts)
 	.then(() => {
 		console.log("Data received. Beginning file creation...");
-        return createHTML(employees);
+		return createHTML(employees);
 	})
-    .then(html => {
+	.then((html) => {
 		return writeFile(html);
-    })
+	})
 	.then((writeFileResponse) => {
 		console.log(writeFileResponse.message);
 		return copyFile();
