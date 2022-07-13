@@ -50,7 +50,11 @@ function managerPrompts() {
 				],
 			},
 		])
-		.then((answers) => answers.typeOfNext);
+		.then((answers) => {
+            employees.push(new Manager(answers.name, answers.id, answers.email, answers.officeNumber));
+
+            return answers.typeOfNext;
+        });
 }
 
 function engineerPrompts() {
@@ -89,7 +93,11 @@ function engineerPrompts() {
 				],
 			},
 		])
-		.then((answers) => answers.typeOfNext);
+		.then((answers) => {
+            employees.push(new Engineer(answers.name, answers.id, answers.email, answers.github));
+
+            return answers.typeOfNext;
+        });
 }
 
 function internPrompts() {
@@ -128,7 +136,11 @@ function internPrompts() {
 				],
 			},
 		])
-		.then((answers) => answers.typeOfNext);
+		.then((answers) => {
+            employees.push(new Intern(answers.name, answers.id, answers.email, answers.school));
+
+            return answers.typeOfNext;
+        });
 }
 
 // select between and loop engineerPrompts() and internPromps()
