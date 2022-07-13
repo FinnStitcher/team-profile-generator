@@ -1,4 +1,40 @@
-function createHTML(data) {
+function thirdListItem(employee) {
+	const role = employee.getRole();
+
+	if (role === "Manager") {
+		return "Office #: " + employee.officeNumber;
+	} else if (role === "Engineer") {
+		return `GitHub: <a href="https://github.com/${employee.github}">${employee.github}</a>`;
+	} else if (role === "Intern") {
+		return "School: " + employee.school;
+	}
+}
+
+function generateCards(employees) {
+	const cardsHTML = employees.map((element) => {
+		let card = `<div class="card col-3 m-3">
+        <div class="card-header bg-gray text-light">
+            <h2 class="card-title">${element.name}</h2>
+            <h3 class="card-subtitle">${element.role}</h3>
+        </div>
+
+        <div class="card-body">
+            <ul class="list-group">
+                <li>ID: ${element.id}</li>
+                <li>Email: ${element.email}</li>
+                <li>${thirdListItem(element)}</li>
+            </ul>
+        </div>
+    </div>
+    `;
+
+		return card;
+	});
+
+    return cardsHTML;
+}
+
+function createHTML(employees) {
 	// ideally, split out the different types of employee to organize them
 
 	return `<!DOCTYPE html>
@@ -17,54 +53,10 @@ function createHTML(data) {
         </header>
     
         <main class="d-flex">
-            <div class="card col-3 m-3">
-                <div class="card-header bg-gray text-light">
-                    <h2 class="card-title">Bill</h2>
-                    <h3 class="card-subtitle">Manager</h3>
-                </div>
-    
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li>ID: 555</li>
-                        <li>Email: bill@test.com</li>
-                        <li>Office #: 35B</li>
-                    </ul>
-                </div>
-            </div>
-    
-            <div class="card col-3 m-3">
-                <div class="card-header">
-                    <h2 class="card-title">Jens</h2>
-                    <h3 class="card-subtitle">Engineer</h3>
-                </div>
-    
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li>ID: 252</li>
-                        <li>Email: jens@test.com</li>
-                        <li>GitHub: JensEngineer</li>
-                      </ul>
-                    
-                </div>
-            </div>
-            
-            <div class="card col-3 m-3">
-                <div class="card-header">
-                    <h2 class="card-title">Winnie</h2>
-                    <h3 class="card-subtitle">Intern</h3>
-                </div>
-    
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li>ID: 353</li>
-                        <li>Email: winnie@test.com</li>
-                        <li>School: University of Rochester</li>
-                    </ul>
-                </div>
-            </div>
+            ${generateCards(employees)}
         </main>
     </body>
     </html>`;
-};
+}
 
 module.exports = createHTML;
