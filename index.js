@@ -51,22 +51,17 @@ function managerPrompts() {
 				],
 			},
 		])
-		.then((answers) => {
-			employees.push(
-				new Manager(
-					answers.name,
-					answers.id,
-					answers.email,
-					answers.officeNumber
-				)
-			);
+		.then(answers => {
+            const { typeOfNext } = answers;
 
-			if (answers.typeOfNext === "Engineer") {
-				engineerPrompts();
-			} else if (answers.typeOfNext === "Intern") {
-				internPrompts();
-			}
-		});
+            if (typeOfNext === "Engineer") {
+                return engineerPrompts()
+            } else if (typeOfNext === "Intern") {
+                return internPrompts();
+            } else {
+                return;
+            }
+        });
 }
 
 function engineerPrompts() {
@@ -104,23 +99,17 @@ function engineerPrompts() {
 					"I don't want to add another employee",
 				],
 			},
-		])
-		.then((answers) => {
-			employees.push(
-				new Engineer(
-					answers.name,
-					answers.id,
-					answers.email,
-					answers.github
-				)
-			);
+		]).then(answers => {
+            const { typeOfNext } = answers;
 
-			if (answers.typeOfNext === "Engineer") {
-				engineerPrompts();
-			} else if (answers.typeOfNext === "Intern") {
-				internPrompts();
-			}
-		});
+            if (typeOfNext === "Engineer") {
+                return engineerPrompts()
+            } else if (typeOfNext === "Intern") {
+                return internPrompts();
+            } else {
+                return;
+            }
+        });
 }
 
 function internPrompts() {
@@ -159,25 +148,34 @@ function internPrompts() {
 				],
 			},
 		])
-		.then((answers) => {
-			employees.push(
-				new Intern(
-					answers.name,
-					answers.id,
-					answers.email,
-					answers.school
-				)
-			);
+		.then(answers => {
+            const { typeOfNext } = answers;
 
-			if (answers.typeOfNext === "Engineer") {
-				engineerPrompts();
-			} else if (answers.typeOfNext === "Intern") {
-				internPrompts();
-			}
-		});
-}
+            if (typeOfNext === "Engineer") {
+                return engineerPrompts()
+            } else if (typeOfNext === "Intern") {
+                return internPrompts();
+            } else {
+                return;
+            }
+        });
+};
+
+// select and loop engineerPrompts() and internPromps()
+// function otherPrompts(typeOf) {
+//     if (typeOf === "Engineer") {
+//         engineerPrompts().then(answers => otherPrompts(answers.typeOfNext));
+//     } else if (typeOf === "Intern") {
+//         internPrompts.then(answers => otherPrompts(answers.typeOfNext));
+//     } else {
+//         return;
+//     }
+// }
 
 managerPrompts()
+.then(answers => {
+    otherPrompts(answers.typeOfNext);
+})
 	.then(() => {
 		console.log("Data received. Beginning file creation...");
         return createHTML(employees);
