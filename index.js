@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
 
-const { managerQs, engineerQs, internQs } = require("./src/questions.js");
 const { writeFile, copyFile } = require("./src/generate-site.js");
 
 const Manager = require("./lib/Manager");
@@ -12,7 +11,7 @@ const employees = [];
 // wrapping the inquirer.prompt() calls in functions to allow recursion
 // breaking them out into three because each role has a different set of prompts
 
-// at the end of each of these, it checks what type of employee was selected for the next one, and runs engineerPrompts(), runs internPrompts, or stops
+// at the end of each of these, it checks what type of employee was selected for the next one, and runs engineerPrompts, runs internPrompts, or stops
 // i could stand to remove that repetition, but oh well
 
 function managerPrompts() {
@@ -65,8 +64,6 @@ function managerPrompts() {
 				engineerPrompts();
 			} else if (answers.typeOfNext === "Intern") {
 				internPrompts();
-			} else {
-				return;
 			}
 		});
 }
@@ -121,8 +118,6 @@ function engineerPrompts() {
 				engineerPrompts();
 			} else if (answers.typeOfNext === "Intern") {
 				internPrompts();
-			} else {
-				return;
 			}
 		});
 }
@@ -177,10 +172,20 @@ function internPrompts() {
 				engineerPrompts();
 			} else if (answers.typeOfNext === "Intern") {
 				internPrompts();
-			} else {
-				return;
 			}
 		});
 }
 
-managerPrompts();
+managerPrompts()
+	.then(() => {
+		console.log("Data received. Beginning file creation...");
+		return writeFile("testing");
+	})
+	.then((writeFileResponse) => {
+		console.log(writeFileResponse.message);
+		return copyFile();
+	})
+	.then((copyFileResponse) => {
+		console.log(copyFileResponse.message);
+		console.log("Complete! Go to the /dist folder to see the results.");
+	});
