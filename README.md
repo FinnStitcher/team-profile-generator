@@ -11,4 +11,8 @@ To install Team Profile Generator:
 
 ## See It In Action
 
+Tests passing:
+https://www.awesomescreenshot.com/video/9973997?key=46fc31210c38ab94a52ef91dc790a8b3
+
+App demonstration:
 https://www.awesomescreenshot.com/video/9973962?key=f9662d4be0f976e8a8c14b52acaa2761
