@@ -11,4 +11,4 @@ To install Team Profile Generator:
 
 ## See It In Action
 
-link goes here
+https://www.awesomescreenshot.com/video/9973962?key=f9662d4be0f976e8a8c14b52acaa2761
